@@ -1,0 +1,5 @@
+{
+  "name": "Rankings App",
+  "description": "An esports ranking management system with a broadcast-ready overlay view.",
+  "requestFramePermissions": []
+}

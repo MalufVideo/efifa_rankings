@@ -1,0 +1,87 @@
+import React from 'react';
+import { Country, GameMode } from '../types';
+import { motion } from 'framer-motion';
+
+interface CountryCardProps {
+  country: Country;
+  rankDisplay: number;
+  gameMode: GameMode;
+  width?: number | string;
+  height?: number;
+  isDraggable?: boolean;
+}
+
+export const CountryCard: React.FC<CountryCardProps> = ({ 
+  country, 
+  rankDisplay, 
+  gameMode, 
+  width = '100%',
+  height = 86,
+  isDraggable = false
+}) => {
+  
+  const getGradient = () => {
+    switch (gameMode) {
+      case GameMode.ROCKET_LEAGUE:
+        return 'from-orange-500 to-yellow-500';
+      case GameMode.E_MOBILE:
+        return 'from-yellow-400 to-lime-400';
+      case GameMode.E_CONSOLE:
+        return 'from-green-500 to-emerald-400';
+      default:
+        return 'from-blue-500 to-cyan-500';
+    }
+  };
+
+  const baseClasses = `
+    relative flex items-center px-6 rounded-xl shadow-lg 
+    ${isDraggable ? 'cursor-grab active:cursor-grabbing hover:scale-[1.02] transition-transform' : ''}
+    bg-gradient-to-r ${getGradient()}
+    text-white font-bold uppercase tracking-wider overflow-hidden
+  `;
+
+  return (
+    <div 
+      className={baseClasses}
+      style={{ width, height: height - 10 }} // -10 for gap simulation/margin within the cell
+    >
+      {/* Background Pattern Overlay */}
+      <div className="absolute inset-0 opacity-20 bg-[url('https://www.transparenttextures.com/patterns/carbon-fibre.png')] mix-blend-overlay pointer-events-none" />
+      
+      {/* Glossy Shine */}
+      <div className="absolute top-0 left-0 right-0 h-1/2 bg-white/10 pointer-events-none" />
+
+      {/* Rank Circle */}
+      <div className="flex-shrink-0 w-10 h-10 bg-white text-slate-900 rounded-full flex items-center justify-center text-xl font-black mr-4 shadow-md z-10">
+        {rankDisplay}
+      </div>
+
+      {/* Flag Image */}
+      <div className="mr-4 z-10 flex-shrink-0 w-12 h-8 flex items-center justify-center overflow-hidden rounded shadow-sm bg-black/20">
+        <img 
+          src={`https://flagcdn.com/h80/${country.isoCode}.png`} 
+          alt={country.name}
+          className="w-full h-full object-cover"
+        />
+      </div>
+
+      {/* Name */}
+      <div className="text-2xl drop-shadow-md truncate z-10 flex-grow">
+        {country.name}
+      </div>
+
+      {isDraggable && (
+        <div className="ml-auto opacity-50 z-10">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <line x1="8" y1="6" x2="21" y2="6"></line>
+            <line x1="8" y1="12" x2="21" y2="12"></line>
+            <line x1="8" y1="18" x2="21" y2="18"></line>
+            <line x1="3" y1="6" x2="3.01" y2="6"></line>
+            <line x1="3" y1="12" x2="3.01" y2="12"></line>
+            <line x1="3" y1="18" x2="3.01" y2="18"></line>
+          </svg>
+        </div>
+      )}
+    </div>
+  );
+};

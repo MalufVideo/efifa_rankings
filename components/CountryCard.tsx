@@ -20,43 +20,44 @@ export const CountryCard: React.FC<CountryCardProps> = ({
   isDraggable = false
 }) => {
   
-  const getGradientStyle = () => {
+  const getGradient = () => {
     switch (gameMode) {
       case GameMode.ROCKET_LEAGUE:
-        return 'linear-gradient(to right, #CF0605, #FEB50B)';
+        return 'from-[#CF0605] to-[#FEB50B]';
       case GameMode.E_MOBILE:
-        return 'linear-gradient(to right, #BCA400, #D9D838)';
+        return 'from-[#BCA400] to-[#D9D838]';
       case GameMode.E_CONSOLE:
-        return 'linear-gradient(to right, #019C2E, #9DDC03)';
+        return 'from-[#019C2E] to-[#9DDC03]';
       default:
-        return 'linear-gradient(to right, #3b82f6, #06b6d4)';
+        return 'from-gray-500 to-gray-400';
     }
   };
 
   const baseClasses = `
-    relative flex items-center px-6 rounded-xl shadow-lg
+    relative flex items-center px-6 rounded-xl shadow-lg 
     ${isDraggable ? 'cursor-grab active:cursor-grabbing hover:scale-[1.02] transition-transform' : ''}
+    bg-gradient-to-r ${getGradient()}
     text-black font-bold uppercase tracking-wider overflow-hidden
   `;
 
   return (
     <div 
       className={baseClasses}
-      style={{ width, height: height - 10, background: getGradientStyle() }} // -10 for gap simulation/margin within the cell
+      style={{ width, height: height - 10 }} // -10 for gap simulation/margin within the cell
     >
       {/* Background Pattern Overlay */}
       <div className="absolute inset-0 opacity-20 bg-[url('https://www.transparenttextures.com/patterns/carbon-fibre.png')] mix-blend-overlay pointer-events-none" />
       
       {/* Glossy Shine */}
-      <div className="absolute top-0 left-0 right-0 h-1/2 bg-white/10 pointer-events-none" />
+      <div className="absolute top-0 left-0 right-0 h-1/2 bg-white/20 pointer-events-none" />
 
       {/* Rank Circle */}
-      <div className="flex-shrink-0 w-10 h-10 bg-white text-slate-900 rounded-full flex items-center justify-center text-xl font-black mr-4 shadow-md z-10">
+      <div className="flex-shrink-0 w-10 h-10 bg-black/80 text-white rounded-full flex items-center justify-center text-xl font-black mr-4 shadow-md z-10 border-2 border-white/20">
         {rankDisplay}
       </div>
 
       {/* Flag Image */}
-      <div className="mr-4 z-10 flex-shrink-0 w-12 h-8 flex items-center justify-center overflow-hidden rounded shadow-sm bg-black/20">
+      <div className="mr-4 z-10 flex-shrink-0 w-12 h-8 flex items-center justify-center overflow-hidden rounded shadow-sm bg-black/10 border border-black/10">
         <img 
           src={`https://flagcdn.com/h80/${country.isoCode}.png`} 
           alt={country.name}
@@ -65,7 +66,7 @@ export const CountryCard: React.FC<CountryCardProps> = ({
       </div>
 
       {/* Name */}
-      <div className="text-2xl drop-shadow-md truncate z-10 flex-grow">
+      <div className="text-2xl drop-shadow-sm truncate z-10 flex-grow font-black">
         {country.name}
       </div>
 

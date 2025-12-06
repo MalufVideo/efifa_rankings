@@ -40,15 +40,11 @@ export const AdminPage: React.FC = () => {
     // 1. Update the local Live state (triggers Right Column animation)
     setLiveRankings(prev => ({
       ...prev,
-      [selectedMode]: [...draftList] // Create a copy to ensure reference change triggers render
+      [selectedMode]: [...draftList] 
     }));
 
-    // 2. Send to Broadcast page
-    broadcastService.sendMessage({
-      type: 'UPDATE_RANKINGS',
-      gameMode: selectedMode,
-      countries: draftList
-    });
+    // 2. Persist State (Updates Broadcast Page globally via polling/storage)
+    broadcastService.saveState(selectedMode, draftList);
   };
 
   const itemsToSkip = selectedMode === GameMode.ROCKET_LEAGUE ? 0 : 2;
@@ -140,8 +136,8 @@ export const AdminPage: React.FC = () => {
         </div>
 
         {/* MIDDLE: Actions */}
-        <div className="w-32 bg-slate-900 border-r border-slate-800 flex flex-col items-center justify-center p-4 gap-8 z-10 shadow-xl">
-          <div className="text-center space-y-2">
+        <div className="w-32 bg-slate-900 border-r border-slate-800 flex flex-col items-center justify-center p-4 gap-8 z-10 shadow-xl relative">
+          <div className="text-center space-y-2 relative z-20">
             <div className="w-1 h-24 bg-slate-800 mx-auto rounded-full mb-4"></div>
             <button
               onClick={handleAnima}
@@ -156,14 +152,13 @@ export const AdminPage: React.FC = () => {
         </div>
 
         {/* RIGHT COLUMN: Live Preview */}
-        {/* Added overflow-hidden to parent and Removed overflow-y-auto from child to prevent scrollbar */}
         <div className="flex-1 bg-[url('https://www.transparenttextures.com/patterns/dark-matter.png')] bg-slate-950 relative overflow-hidden flex items-start justify-center p-8">
           <div className="absolute top-4 right-4 bg-red-500/20 text-red-400 px-3 py-1 rounded-full text-xs font-bold border border-red-500/30 animate-pulse z-50">
             LIVE OUTPUT
           </div>
           
-          {/* Scaled down preview container */}
-          <div className="transform scale-[0.6] origin-top h-full w-full flex justify-center">
+          {/* Scaled down preview container to fit resolution without scrolling */}
+          <div className="transform scale-[0.55] origin-top h-full w-full flex justify-center pointer-events-none">
              {/* Simulating the broadcast grid structure */}
             <div 
               style={{ width: CELL_WIDTH }}
@@ -189,7 +184,7 @@ export const AdminPage: React.FC = () => {
                         stiffness: 150, 
                         damping: 20,
                         mass: 0.8,
-                        layout: { duration: 0.8 } // Sleek movement
+                        layout: { duration: 0.8 }
                       }}
                       style={{ height: CELL_HEIGHT }}
                       className="flex items-center justify-center w-full"

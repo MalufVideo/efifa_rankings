@@ -6,11 +6,12 @@ import { AnimatePresence, motion } from 'framer-motion';
 import { CountryCard } from './CountryCard';
 
 export const BroadcastPage: React.FC = () => {
-  const [currentMode, setCurrentMode] = useState<GameMode>(GameMode.E_CONSOLE); // Default, updates on signal
+  const [currentMode, setCurrentMode] = useState<GameMode>(GameMode.E_CONSOLE);
   const [countries, setCountries] = useState<Country[]>(INITIAL_DATA[GameMode.E_CONSOLE]);
 
   useEffect(() => {
-    const unsubscribe = broadcastService.onMessage((msg) => {
+    // New subscription method that handles polling and storage events
+    const unsubscribe = broadcastService.subscribe((msg) => {
       if (msg.type === 'UPDATE_RANKINGS') {
         setCurrentMode(msg.gameMode);
         setCountries(msg.countries);

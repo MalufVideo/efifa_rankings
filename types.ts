@@ -15,6 +15,7 @@ export interface BroadcastMessage {
   type: 'UPDATE_RANKINGS';
   gameMode: GameMode;
   countries: Country[];
+  timestamp?: number; // Added for sync versioning
 }
 
 export const ADMIN_PASSWORD = 'sp2efifa';

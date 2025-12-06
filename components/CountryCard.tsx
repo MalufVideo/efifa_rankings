@@ -20,30 +20,29 @@ export const CountryCard: React.FC<CountryCardProps> = ({
   isDraggable = false
 }) => {
   
-  const getGradient = () => {
+  const getGradientStyle = () => {
     switch (gameMode) {
       case GameMode.ROCKET_LEAGUE:
-        return 'from-orange-500 to-yellow-500';
+        return 'linear-gradient(to right, #CF0605, #FEB50B)';
       case GameMode.E_MOBILE:
-        return 'from-yellow-400 to-lime-400';
+        return 'linear-gradient(to right, #BCA400, #D9D838)';
       case GameMode.E_CONSOLE:
-        return 'from-green-500 to-emerald-400';
+        return 'linear-gradient(to right, #019C2E, #9DDC03)';
       default:
-        return 'from-blue-500 to-cyan-500';
+        return 'linear-gradient(to right, #3b82f6, #06b6d4)';
     }
   };
 
   const baseClasses = `
-    relative flex items-center px-6 rounded-xl shadow-lg 
+    relative flex items-center px-6 rounded-xl shadow-lg
     ${isDraggable ? 'cursor-grab active:cursor-grabbing hover:scale-[1.02] transition-transform' : ''}
-    bg-gradient-to-r ${getGradient()}
-    text-white font-bold uppercase tracking-wider overflow-hidden
+    text-black font-bold uppercase tracking-wider overflow-hidden
   `;
 
   return (
     <div 
       className={baseClasses}
-      style={{ width, height: height - 10 }} // -10 for gap simulation/margin within the cell
+      style={{ width, height: height - 10, background: getGradientStyle() }} // -10 for gap simulation/margin within the cell
     >
       {/* Background Pattern Overlay */}
       <div className="absolute inset-0 opacity-20 bg-[url('https://www.transparenttextures.com/patterns/carbon-fibre.png')] mix-blend-overlay pointer-events-none" />

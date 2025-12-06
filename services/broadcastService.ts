@@ -8,7 +8,7 @@ const POLL_INTERVAL_MS = 2000;
 // 1. Create a bin on a service like https://jsonbin.io or https://npoint.io
 // 2. Paste the URL below.
 // 3. Ensure the Admin page can PUT/POST to it and Broadcast can GET from it.
-const REMOTE_API_URL = ''; 
+const REMOTE_API_URL = '/api/rankings'; 
 
 class BroadcastService {
   private channel: BroadcastChannel;

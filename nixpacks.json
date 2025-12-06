@@ -1,0 +1,21 @@
+{
+  "providers": ["node"],
+  "buildImage": "ghcr.io/railwayapp/nixpacks:ubuntu-1733184277",
+  "variables": {
+    "NIXPACKS_NODE_VERSION": "22"
+  },
+  "phases": {
+    "setup": {
+      "nixPkgs": ["nodejs"]
+    },
+    "install": {
+      "cmds": ["npm install"]
+    },
+    "build": {
+      "cmds": ["npm run build"]
+    }
+  },
+  "start": {
+    "cmd": "npm start"
+  }
+}

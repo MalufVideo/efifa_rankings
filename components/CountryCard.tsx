@@ -48,9 +48,7 @@ export const CountryCard: React.FC<CountryCardProps> = ({
       {/* Background Pattern Overlay */}
       <div className="absolute inset-0 opacity-20 bg-[url('https://www.transparenttextures.com/patterns/carbon-fibre.png')] mix-blend-overlay pointer-events-none" />
       
-      {/* Glossy Shine */}
-      <div className="absolute top-0 left-0 right-0 h-1/2 bg-white/20 pointer-events-none" />
-
+      
       {/* Rank Circle */}
       <div className="flex-shrink-0 w-10 h-10 bg-black/80 text-white rounded-full flex items-center justify-center text-xl font-black mr-4 shadow-md z-10 border-2 border-white/20">
         {rankDisplay}
@@ -66,7 +64,7 @@ export const CountryCard: React.FC<CountryCardProps> = ({
       </div>
 
       {/* Name */}
-      <div className="text-2xl drop-shadow-sm truncate z-10 flex-grow font-black">
+      <div className="text-2xl drop-shadow-sm truncate z-10 flex-grow font-black text-center">
         {country.name}
       </div>
 

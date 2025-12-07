@@ -1,6 +1,5 @@
 {
   "providers": ["node"],
-  "buildImage": "ghcr.io/railwayapp/nixpacks:ubuntu-1733184277",
   "variables": {
     "NIXPACKS_NODE_VERSION": "22"
   },

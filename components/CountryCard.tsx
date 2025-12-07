@@ -1,6 +1,6 @@
 import React from 'react';
-import { Country, GameMode } from '../types';
-import { motion } from 'framer-motion';
+import { Country, GameMode, LayoutSettings } from '../types';
+import { DEFAULT_LAYOUT_SETTINGS } from '../constants';
 
 interface CountryCardProps {
   country: Country;
@@ -9,6 +9,7 @@ interface CountryCardProps {
   width?: number | string;
   height?: number;
   isDraggable?: boolean;
+  layoutSettings?: LayoutSettings;
 }
 
 export const CountryCard: React.FC<CountryCardProps> = ({ 
@@ -17,8 +18,10 @@ export const CountryCard: React.FC<CountryCardProps> = ({
   gameMode, 
   width = '100%',
   height = 86,
-  isDraggable = false
+  isDraggable = false,
+  layoutSettings = DEFAULT_LAYOUT_SETTINGS
 }) => {
+  const { fontSize, textPositionX, rankPositionX, rankSize, flagSize, flagPositionX } = layoutSettings;
   
   const getGradient = () => {
     switch (gameMode) {
@@ -50,12 +53,27 @@ export const CountryCard: React.FC<CountryCardProps> = ({
       
       
       {/* Rank Circle */}
-      <div className="flex-shrink-0 w-10 h-10 bg-black/80 text-white rounded-full flex items-center justify-center text-xl font-black mr-4 shadow-md z-10 border-2 border-white/20">
+      <div 
+        className="flex-shrink-0 bg-black/80 text-white rounded-full flex items-center justify-center font-black mr-4 shadow-md z-10 border-2 border-white/20"
+        style={{ 
+          width: 40 * rankSize, 
+          height: 40 * rankSize,
+          fontSize: 20 * rankSize,
+          transform: `translateX(${rankPositionX}px)` 
+        }}
+      >
         {rankDisplay}
       </div>
 
       {/* Flag Image */}
-      <div className="mr-4 z-10 flex-shrink-0 w-12 h-8 flex items-center justify-center overflow-hidden rounded shadow-sm bg-black/10 border border-black/10">
+      <div 
+        className="mr-4 z-10 flex-shrink-0 flex items-center justify-center overflow-hidden rounded shadow-sm bg-black/10 border border-black/10"
+        style={{ 
+          width: 48 * flagSize, 
+          height: 32 * flagSize,
+          transform: `translateX(${flagPositionX}px)` 
+        }}
+      >
         <img 
           src={`https://flagcdn.com/h80/${country.isoCode}.png`} 
           alt={country.name}
@@ -64,7 +82,13 @@ export const CountryCard: React.FC<CountryCardProps> = ({
       </div>
 
       {/* Name */}
-      <div className="text-2xl drop-shadow-sm truncate z-10 flex-grow font-black text-center">
+      <div 
+        className="drop-shadow-sm truncate z-10 flex-grow font-black text-center"
+        style={{ 
+          fontSize: `${fontSize}px`,
+          transform: `translateX(${textPositionX}px)` 
+        }}
+      >
         {country.name}
       </div>
 

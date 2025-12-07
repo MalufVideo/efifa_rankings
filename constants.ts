@@ -1,4 +1,14 @@
-import { Country, GameMode } from './types';
+import { Country, GameMode, LayoutSettings } from './types';
+
+// Default layout settings
+export const DEFAULT_LAYOUT_SETTINGS: LayoutSettings = {
+  fontSize: 24,        // Default text size (2xl = ~24px)
+  textPositionX: 0,    // No offset by default
+  rankPositionX: 0,    // No offset by default
+  rankSize: 1,         // 1x multiplier (default size)
+  flagSize: 1,         // 1x multiplier (default size)
+  flagPositionX: 0,    // No offset by default
+};
 
 const createCountry = (id: string, name: string, isoCode: string, rank: number): Country => ({
   id, name, isoCode, rank
@@ -54,7 +64,7 @@ export const INITIAL_DATA: Record<GameMode, Country[]> = {
 };
 
 // Layout configuration
-export const CELL_WIDTH = 1204;
+export const CELL_WIDTH = 1376;
 export const CELL_HEIGHT = 86;
-export const CANVAS_WIDTH = 1204;
+export const CANVAS_WIDTH = 1376;
 export const CANVAS_HEIGHT = 1376;

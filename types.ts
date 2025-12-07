@@ -11,10 +11,20 @@ export interface Country {
   rank: number;
 }
 
+export interface LayoutSettings {
+  fontSize: number;       // Font size for country name (px)
+  textPositionX: number;  // X offset for text (px)
+  rankPositionX: number;  // X offset for rank number (px)
+  rankSize: number;       // Rank number size multiplier (1 = default)
+  flagSize: number;       // Flag size multiplier (1 = default)
+  flagPositionX: number;  // X offset for flag (px)
+}
+
 export interface BroadcastMessage {
   type: 'UPDATE_RANKINGS';
   gameMode: GameMode;
   countries: Country[];
+  layoutSettings?: LayoutSettings;
   timestamp?: number; // Added for sync versioning
 }
 

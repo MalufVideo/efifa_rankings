@@ -1,13 +1,14 @@
 import React, { useEffect, useState } from 'react';
 import { broadcastService } from '../services/broadcastService';
-import { GameMode, Country } from '../types';
-import { INITIAL_DATA, CELL_HEIGHT, CELL_WIDTH, CANVAS_HEIGHT, CANVAS_WIDTH } from '../constants';
+import { GameMode, Country, LayoutSettings } from '../types';
+import { INITIAL_DATA, CELL_HEIGHT, CELL_WIDTH, CANVAS_HEIGHT, CANVAS_WIDTH, DEFAULT_LAYOUT_SETTINGS } from '../constants';
 import { AnimatePresence, motion } from 'framer-motion';
 import { CountryCard } from './CountryCard';
 
 export const BroadcastPage: React.FC = () => {
   const [currentMode, setCurrentMode] = useState<GameMode>(GameMode.E_CONSOLE);
   const [countries, setCountries] = useState<Country[]>(INITIAL_DATA[GameMode.E_CONSOLE]);
+  const [layoutSettings, setLayoutSettings] = useState<LayoutSettings>(DEFAULT_LAYOUT_SETTINGS);
 
   useEffect(() => {
     // New subscription method that handles polling and storage events
@@ -15,6 +16,9 @@ export const BroadcastPage: React.FC = () => {
       if (msg.type === 'UPDATE_RANKINGS') {
         setCurrentMode(msg.gameMode);
         setCountries(msg.countries);
+        if (msg.layoutSettings) {
+          setLayoutSettings(msg.layoutSettings);
+        }
       }
     });
     return unsubscribe;
@@ -66,6 +70,7 @@ export const BroadcastPage: React.FC = () => {
                   gameMode={currentMode}
                   width={CELL_WIDTH}
                   height={CELL_HEIGHT}
+                  layoutSettings={layoutSettings}
                 />
               </motion.div>
             ))}

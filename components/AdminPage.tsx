@@ -1,10 +1,10 @@
 import React, { useState } from 'react';
-import { GameMode, Country, ADMIN_PASSWORD } from '../types';
-import { INITIAL_DATA, CELL_HEIGHT, CELL_WIDTH } from '../constants';
+import { GameMode, Country, ADMIN_PASSWORD, LayoutSettings } from '../types';
+import { INITIAL_DATA, CELL_HEIGHT, CELL_WIDTH, DEFAULT_LAYOUT_SETTINGS } from '../constants';
 import { Reorder, AnimatePresence, motion } from 'framer-motion';
 import { CountryCard } from './CountryCard';
 import { broadcastService } from '../services/broadcastService';
-import { Lock, Unlock, Send, Monitor } from 'lucide-react';
+import { Lock, Unlock, Send, Monitor, Settings, RotateCcw } from 'lucide-react';
 
 export const AdminPage: React.FC = () => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -16,6 +16,10 @@ export const AdminPage: React.FC = () => {
   
   // LIVE STATE: This is what is shown in the Right Column and Broadcast Page
   const [liveRankings, setLiveRankings] = useState<Record<GameMode, Country[]>>(INITIAL_DATA);
+  
+  // LAYOUT SETTINGS: Controls for card appearance
+  const [layoutSettings, setLayoutSettings] = useState<LayoutSettings>(DEFAULT_LAYOUT_SETTINGS);
+  const [showLayoutControls, setShowLayoutControls] = useState(false);
   
   const draftList = draftRankings[selectedMode];
   const liveList = liveRankings[selectedMode];
@@ -44,7 +48,15 @@ export const AdminPage: React.FC = () => {
     }));
 
     // 2. Persist State (Updates Broadcast Page globally via polling/storage)
-    broadcastService.saveState(selectedMode, draftList);
+    broadcastService.saveState(selectedMode, draftList, layoutSettings);
+  };
+
+  const handleLayoutChange = (key: keyof LayoutSettings, value: number) => {
+    setLayoutSettings(prev => ({ ...prev, [key]: value }));
+  };
+
+  const resetLayoutSettings = () => {
+    setLayoutSettings(DEFAULT_LAYOUT_SETTINGS);
   };
 
   const itemsToSkip = selectedMode === GameMode.ROCKET_LEAGUE ? 0 : 2;
@@ -96,6 +108,14 @@ export const AdminPage: React.FC = () => {
           </select>
         </div>
         <div className="flex gap-4 text-sm text-slate-400">
+          <button
+            onClick={() => setShowLayoutControls(!showLayoutControls)}
+            className={`flex items-center gap-2 px-3 py-1.5 rounded-md transition-colors ${
+              showLayoutControls ? 'bg-emerald-500/20 text-emerald-400' : 'hover:bg-slate-800'
+            }`}
+          >
+            <Settings className="w-4 h-4" /> Layout
+          </button>
           <span className="flex items-center gap-2">
             <Monitor className="w-4 h-4" /> Broadcast Ready
           </span>
@@ -107,6 +127,124 @@ export const AdminPage: React.FC = () => {
         
         {/* LEFT COLUMN: Editor */}
         <div className="w-1/3 min-w-[350px] border-r border-slate-800 p-6 flex flex-col bg-slate-900/50 overflow-y-auto custom-scrollbar">
+          
+          {/* Layout Controls Panel */}
+          {showLayoutControls && (
+            <div className="mb-6 p-4 bg-slate-800/50 rounded-xl border border-slate-700">
+              <div className="flex items-center justify-between mb-4">
+                <h3 className="text-sm font-semibold text-slate-300 flex items-center gap-2">
+                  <Settings className="w-4 h-4" /> Layout Controls
+                </h3>
+                <button
+                  onClick={resetLayoutSettings}
+                  className="text-xs text-slate-400 hover:text-slate-200 flex items-center gap-1 px-2 py-1 rounded hover:bg-slate-700 transition-colors"
+                >
+                  <RotateCcw className="w-3 h-3" /> Reset
+                </button>
+              </div>
+              
+              <div className="space-y-4">
+                {/* Font Size */}
+                <div>
+                  <label className="text-xs text-slate-400 mb-1 flex justify-between">
+                    <span>Font Size</span>
+                    <span className="text-emerald-400">{layoutSettings.fontSize}px</span>
+                  </label>
+                  <input
+                    type="range"
+                    min="12"
+                    max="48"
+                    value={layoutSettings.fontSize}
+                    onChange={(e) => handleLayoutChange('fontSize', Number(e.target.value))}
+                    className="w-full h-2 bg-slate-700 rounded-lg appearance-none cursor-pointer accent-emerald-500"
+                  />
+                </div>
+
+                {/* Text Position X */}
+                <div>
+                  <label className="text-xs text-slate-400 mb-1 flex justify-between">
+                    <span>Text Position X</span>
+                    <span className="text-emerald-400">{layoutSettings.textPositionX}px</span>
+                  </label>
+                  <input
+                    type="range"
+                    min="-200"
+                    max="200"
+                    value={layoutSettings.textPositionX}
+                    onChange={(e) => handleLayoutChange('textPositionX', Number(e.target.value))}
+                    className="w-full h-2 bg-slate-700 rounded-lg appearance-none cursor-pointer accent-emerald-500"
+                  />
+                </div>
+
+                {/* Rank Position X */}
+                <div>
+                  <label className="text-xs text-slate-400 mb-1 flex justify-between">
+                    <span>Rank Position X</span>
+                    <span className="text-emerald-400">{layoutSettings.rankPositionX}px</span>
+                  </label>
+                  <input
+                    type="range"
+                    min="-100"
+                    max="100"
+                    value={layoutSettings.rankPositionX}
+                    onChange={(e) => handleLayoutChange('rankPositionX', Number(e.target.value))}
+                    className="w-full h-2 bg-slate-700 rounded-lg appearance-none cursor-pointer accent-emerald-500"
+                  />
+                </div>
+
+                {/* Rank Size */}
+                <div>
+                  <label className="text-xs text-slate-400 mb-1 flex justify-between">
+                    <span>Rank Size</span>
+                    <span className="text-emerald-400">{layoutSettings.rankSize.toFixed(1)}x</span>
+                  </label>
+                  <input
+                    type="range"
+                    min="0.5"
+                    max="2.5"
+                    step="0.1"
+                    value={layoutSettings.rankSize}
+                    onChange={(e) => handleLayoutChange('rankSize', Number(e.target.value))}
+                    className="w-full h-2 bg-slate-700 rounded-lg appearance-none cursor-pointer accent-emerald-500"
+                  />
+                </div>
+
+                {/* Flag Size */}
+                <div>
+                  <label className="text-xs text-slate-400 mb-1 flex justify-between">
+                    <span>Flag Size</span>
+                    <span className="text-emerald-400">{layoutSettings.flagSize.toFixed(1)}x</span>
+                  </label>
+                  <input
+                    type="range"
+                    min="0.5"
+                    max="2.5"
+                    step="0.1"
+                    value={layoutSettings.flagSize}
+                    onChange={(e) => handleLayoutChange('flagSize', Number(e.target.value))}
+                    className="w-full h-2 bg-slate-700 rounded-lg appearance-none cursor-pointer accent-emerald-500"
+                  />
+                </div>
+
+                {/* Flag Position X */}
+                <div>
+                  <label className="text-xs text-slate-400 mb-1 flex justify-between">
+                    <span>Flag Position X</span>
+                    <span className="text-emerald-400">{layoutSettings.flagPositionX}px</span>
+                  </label>
+                  <input
+                    type="range"
+                    min="-100"
+                    max="100"
+                    value={layoutSettings.flagPositionX}
+                    onChange={(e) => handleLayoutChange('flagPositionX', Number(e.target.value))}
+                    className="w-full h-2 bg-slate-700 rounded-lg appearance-none cursor-pointer accent-emerald-500"
+                  />
+                </div>
+              </div>
+            </div>
+          )}
+
           <div className="mb-4 flex items-center justify-between">
             <h3 className="text-lg font-semibold text-slate-300">Draft Order</h3>
             <span className="text-xs bg-slate-800 px-2 py-1 rounded text-slate-400">Drag to reorder</span>
@@ -129,6 +267,7 @@ export const AdminPage: React.FC = () => {
                   rankDisplay={index + 1} 
                   gameMode={selectedMode}
                   isDraggable
+                  layoutSettings={layoutSettings}
                 />
               </Reorder.Item>
             ))}
@@ -193,6 +332,7 @@ export const AdminPage: React.FC = () => {
                         country={country} 
                         rankDisplay={index + 1} 
                         gameMode={selectedMode}
+                        layoutSettings={layoutSettings}
                       />
                     </motion.div>
                   ))}

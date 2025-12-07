@@ -45,7 +45,7 @@ if (fs.existsSync(distPath)) {
   app.use(express.static(distPath));
 
   // Handle client-side routing by serving index.html for all non-API routes
-  app.get('*', (req, res) => {
+  app.get('/{*splat}', (req, res) => {
     res.sendFile(path.join(distPath, 'index.html'));
   });
 } else {

@@ -21,20 +21,43 @@ export const CountryCard: React.FC<CountryCardProps> = ({
   isDraggable = false,
   layoutSettings = DEFAULT_LAYOUT_SETTINGS
 }) => {
-  const { fontSize, textPositionX, rankPositionX, rankSize, flagSize, flagPositionX } = layoutSettings;
+  const { fontSize, textPositionX, rankPositionX, rankSize, flagSize, flagPositionX, headerFontSize, headerPositionX } = layoutSettings;
   
   const getGradient = () => {
     switch (gameMode) {
       case GameMode.ROCKET_LEAGUE:
         return 'from-[#CF0605] to-[#FEB50B]';
       case GameMode.E_MOBILE:
+      case GameMode.E_MOBILE_GROUPS:
         return 'from-[#BCA400] to-[#D9D838]';
       case GameMode.E_CONSOLE:
+      case GameMode.E_CONSOLE_GROUPS:
         return 'from-[#019C2E] to-[#9DDC03]';
       default:
         return 'from-gray-500 to-gray-400';
     }
   };
+
+  // Render header row (Group A / Group B) - transparent background
+  if (country.isHeader) {
+    return (
+      <div 
+        className="relative flex items-center justify-center text-white font-black uppercase tracking-wider"
+        style={{ width, height: height - 10 }}
+      >
+        <div 
+          className="drop-shadow-lg z-10 text-center"
+          style={{ 
+            fontSize: `${headerFontSize}px`,
+            transform: `translateX(${headerPositionX}px)`,
+            textShadow: '2px 2px 4px rgba(0,0,0,0.5)'
+          }}
+        >
+          {country.name}
+        </div>
+      </div>
+    );
+  }
 
   const baseClasses = `
     relative flex items-center px-6 rounded-xl shadow-lg 
@@ -62,7 +85,7 @@ export const CountryCard: React.FC<CountryCardProps> = ({
           transform: `translateX(${rankPositionX}px)` 
         }}
       >
-        {rankDisplay}
+        {country.rank || rankDisplay}
       </div>
 
       {/* Flag Image */}

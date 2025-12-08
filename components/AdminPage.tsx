@@ -59,7 +59,7 @@ export const AdminPage: React.FC = () => {
     setLayoutSettings(DEFAULT_LAYOUT_SETTINGS);
   };
 
-  const itemsToSkip = selectedMode === GameMode.ROCKET_LEAGUE ? 0 : 2;
+  const itemsToSkip = selectedMode === GameMode.ROCKET_LEAGUE ? 0 : 0;
 
   if (!isAuthenticated) {
     return (
@@ -185,7 +185,7 @@ export const AdminPage: React.FC = () => {
                   <input
                     type="range"
                     min="-100"
-                    max="100"
+                    max="400"
                     value={layoutSettings.rankPositionX}
                     onChange={(e) => handleLayoutChange('rankPositionX', Number(e.target.value))}
                     className="w-full h-2 bg-slate-700 rounded-lg appearance-none cursor-pointer accent-emerald-500"
@@ -235,9 +235,41 @@ export const AdminPage: React.FC = () => {
                   <input
                     type="range"
                     min="-100"
-                    max="100"
+                    max="400"
                     value={layoutSettings.flagPositionX}
                     onChange={(e) => handleLayoutChange('flagPositionX', Number(e.target.value))}
+                    className="w-full h-2 bg-slate-700 rounded-lg appearance-none cursor-pointer accent-emerald-500"
+                  />
+                </div>
+
+                {/* Header Font Size */}
+                <div>
+                  <label className="text-xs text-slate-400 mb-1 flex justify-between">
+                    <span>Header Text Size</span>
+                    <span className="text-emerald-400">{layoutSettings.headerFontSize}px</span>
+                  </label>
+                  <input
+                    type="range"
+                    min="16"
+                    max="72"
+                    value={layoutSettings.headerFontSize}
+                    onChange={(e) => handleLayoutChange('headerFontSize', Number(e.target.value))}
+                    className="w-full h-2 bg-slate-700 rounded-lg appearance-none cursor-pointer accent-emerald-500"
+                  />
+                </div>
+
+                {/* Header Position X */}
+                <div>
+                  <label className="text-xs text-slate-400 mb-1 flex justify-between">
+                    <span>Header Position X</span>
+                    <span className="text-emerald-400">{layoutSettings.headerPositionX}px</span>
+                  </label>
+                  <input
+                    type="range"
+                    min="-400"
+                    max="400"
+                    value={layoutSettings.headerPositionX}
+                    onChange={(e) => handleLayoutChange('headerPositionX', Number(e.target.value))}
                     className="w-full h-2 bg-slate-700 rounded-lg appearance-none cursor-pointer accent-emerald-500"
                   />
                 </div>

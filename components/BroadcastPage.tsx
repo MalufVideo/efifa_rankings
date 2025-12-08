@@ -24,7 +24,7 @@ export const BroadcastPage: React.FC = () => {
     return unsubscribe;
   }, []);
 
-  const itemsToSkip = currentMode === GameMode.ROCKET_LEAGUE ? 0 : 2;
+  const itemsToSkip = currentMode === GameMode.ROCKET_LEAGUE ? 0 : 0;
 
   // The styling requires exact pixel dimensions as per request
   return (
@@ -69,7 +69,7 @@ export const BroadcastPage: React.FC = () => {
                   rankDisplay={index + 1} 
                   gameMode={currentMode}
                   width={CELL_WIDTH}
-                  height={CELL_HEIGHT}
+                  height={CELL_HEIGHT}    
                   layoutSettings={layoutSettings}
                 />
               </motion.div>

@@ -8,10 +8,16 @@ export const DEFAULT_LAYOUT_SETTINGS: LayoutSettings = {
   rankSize: 1,         // 1x multiplier (default size)
   flagSize: 1,         // 1x multiplier (default size)
   flagPositionX: 0,    // No offset by default
+  headerFontSize: 36,  // Default header text size
+  headerPositionX: 0,  // No offset by default
 };
 
 const createCountry = (id: string, name: string, isoCode: string, rank: number): Country => ({
   id, name, isoCode, rank
+});
+
+const createHeader = (id: string, name: string): Country => ({
+  id, name, isoCode: '', rank: 0, isHeader: true
 });
 
 export const INITIAL_DATA: Record<GameMode, Country[]> = {
@@ -60,6 +66,38 @@ export const INITIAL_DATA: Record<GameMode, Country[]> = {
     createCountry('em-10', 'Thailand', 'th', 10),
     createCountry('em-11', 'Egypt', 'eg', 11),
     createCountry('em-12', 'Malaysia', 'my', 12),
+  ],
+  [GameMode.E_CONSOLE_GROUPS]: [
+    createHeader('ecg-header-a', 'GROUP A'),
+    createCountry('ecg-1', 'Saudi Arabia', 'sa', 1),
+    createCountry('ecg-2', 'Italy', 'it', 2),
+    createCountry('ecg-3', 'Brazil', 'br', 3),
+    createCountry('ecg-4', 'Chile', 'cl', 4),
+    createCountry('ecg-5', 'Thailand', 'th', 5),
+    createCountry('ecg-6', 'Türkiye', 'tr', 6),
+    createHeader('ecg-header-b', 'GROUP B'),
+    createCountry('ecg-7', 'Morocco', 'ma', 1),
+    createCountry('ecg-8', 'Jordan', 'jo', 2),
+    createCountry('ecg-9', 'Japan', 'jp', 3),
+    createCountry('ecg-10', 'Poland', 'pl', 4),
+    createCountry('ecg-11', 'Indonesia', 'id', 5),
+    createCountry('ecg-12', 'Mexico', 'mx', 6),
+  ],
+  [GameMode.E_MOBILE_GROUPS]: [
+    createHeader('emg-header-a', 'GROUP A'),
+    createCountry('emg-1', 'Saudi Arabia', 'sa', 1),
+    createCountry('emg-2', 'Bahrain', 'bh', 2),
+    createCountry('emg-3', 'Brazil', 'br', 3),
+    createCountry('emg-4', 'Thailand', 'th', 4),
+    createCountry('emg-5', 'Egypt', 'eg', 5),
+    createCountry('emg-6', 'Malaysia', 'my', 6),
+    createHeader('emg-header-b', 'GROUP B'),
+    createCountry('emg-7', 'Türkiye', 'tr', 1),
+    createCountry('emg-8', 'Japan', 'jp', 2),
+    createCountry('emg-9', 'Morocco', 'ma', 3),
+    createCountry('emg-10', 'India', 'in', 4),
+    createCountry('emg-11', 'Colombia', 'co', 5),
+    createCountry('emg-12', 'Greece', 'gr', 6),
   ]
 };
 

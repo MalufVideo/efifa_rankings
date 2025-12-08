@@ -1,7 +1,9 @@
 export enum GameMode {
   ROCKET_LEAGUE = 'Rocket League',
   E_CONSOLE = 'eConsole',
-  E_MOBILE = 'eMobile'
+  E_MOBILE = 'eMobile',
+  E_CONSOLE_GROUPS = 'eConsole Groups',
+  E_MOBILE_GROUPS = 'eMobile Groups'
 }
 
 export interface Country {
@@ -9,6 +11,7 @@ export interface Country {
   name: string;
   isoCode: string; // Changed from flag emoji to ISO code for API
   rank: number;
+  isHeader?: boolean; // True for group header rows
 }
 
 export interface LayoutSettings {
@@ -18,6 +21,8 @@ export interface LayoutSettings {
   rankSize: number;       // Rank number size multiplier (1 = default)
   flagSize: number;       // Flag size multiplier (1 = default)
   flagPositionX: number;  // X offset for flag (px)
+  headerFontSize: number; // Font size for group headers (px)
+  headerPositionX: number; // X offset for group headers (px)
 }
 
 export interface BroadcastMessage {

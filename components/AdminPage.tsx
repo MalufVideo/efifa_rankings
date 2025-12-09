@@ -1,11 +1,12 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { GameMode, Country, ADMIN_PASSWORD, LayoutSettings } from '../types';
+import { GameMode, Country, ADMIN_PASSWORD, LayoutSettings, RankPositionOffsets } from '../types';
 import { INITIAL_DATA, CELL_HEIGHT, CELL_WIDTH, DEFAULT_LAYOUT_SETTINGS } from '../constants';
 import { Reorder, AnimatePresence, motion } from 'framer-motion';
 import { CountryCard } from './CountryCard';
 import { broadcastService } from '../services/broadcastService';
 import { adminSettingsService, AdminSettings } from '../services/adminSettingsService';
 import { Lock, Unlock, Send, Monitor, Settings, RotateCcw } from 'lucide-react';
+import { RankPositionModal } from './RankPositionModal';
 
 export const AdminPage: React.FC = () => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -22,6 +23,10 @@ export const AdminPage: React.FC = () => {
   // LAYOUT SETTINGS: Controls for card appearance
   const [layoutSettings, setLayoutSettings] = useState<LayoutSettings>(DEFAULT_LAYOUT_SETTINGS);
   const [showLayoutControls, setShowLayoutControls] = useState(false);
+
+  // RANK POSITION OFFSETS: Fine-tune Y position per rank number
+  const [rankPositionOffsets, setRankPositionOffsets] = useState<RankPositionOffsets>({});
+  const [fineTuneModal, setFineTuneModal] = useState<{ isOpen: boolean; rankNumber: number }>({ isOpen: false, rankNumber: 0 });
 
   // Load saved settings on mount
   useEffect(() => {
@@ -52,6 +57,9 @@ export const AdminPage: React.FC = () => {
         if (saved.selectedMode && Object.values(GameMode).includes(saved.selectedMode)) {
           setSelectedMode(saved.selectedMode);
         }
+        if (saved.rankPositionOffsets) {
+          setRankPositionOffsets(saved.rankPositionOffsets);
+        }
       }
       setIsLoading(false);
     };
@@ -66,10 +74,11 @@ export const AdminPage: React.FC = () => {
       liveRankings,
       layoutSettings,
       selectedMode,
+      rankPositionOffsets,
       timestamp: Date.now()
     };
     adminSettingsService.saveSettings(settings);
-  }, [draftRankings, liveRankings, layoutSettings, selectedMode, isLoading]);
+  }, [draftRankings, liveRankings, layoutSettings, selectedMode, rankPositionOffsets, isLoading]);
 
   useEffect(() => {
     saveCurrentSettings();
@@ -103,7 +112,7 @@ export const AdminPage: React.FC = () => {
     setLiveRankings(newLiveRankings);
 
     // 2. Persist State (Updates Broadcast Page globally via polling/storage)
-    broadcastService.saveState(selectedMode, draftList, layoutSettings);
+    broadcastService.saveState(selectedMode, draftList, layoutSettings, rankPositionOffsets);
 
     // 3. Save admin settings immediately
     adminSettingsService.saveSettingsImmediate({
@@ -111,6 +120,7 @@ export const AdminPage: React.FC = () => {
       liveRankings: newLiveRankings,
       layoutSettings,
       selectedMode,
+      rankPositionOffsets,
       timestamp: Date.now()
     });
   };
@@ -121,6 +131,22 @@ export const AdminPage: React.FC = () => {
 
   const resetLayoutSettings = () => {
     setLayoutSettings(DEFAULT_LAYOUT_SETTINGS);
+  };
+
+  // Handle rank position fine-tuning
+  const handleRankClick = (rankNumber: number) => {
+    setFineTuneModal({ isOpen: true, rankNumber });
+  };
+
+  const handleOffsetChange = (newOffset: number) => {
+    setRankPositionOffsets(prev => ({
+      ...prev,
+      [fineTuneModal.rankNumber]: newOffset
+    }));
+  };
+
+  const closeFineTuneModal = () => {
+    setFineTuneModal({ isOpen: false, rankNumber: 0 });
   };
 
   const itemsToSkip = selectedMode === GameMode.ROCKET_LEAGUE ? 0 : 0;
@@ -375,6 +401,8 @@ export const AdminPage: React.FC = () => {
                   gameMode={selectedMode}
                   isDraggable
                   layoutSettings={layoutSettings}
+                  positionYOffset={rankPositionOffsets[getRankDisplay(index)] || 0}
+                  onRankClick={handleRankClick}
                 />
               </Reorder.Item>
             ))}
@@ -440,6 +468,7 @@ export const AdminPage: React.FC = () => {
                         rankDisplay={getRankDisplay(index)} 
                         gameMode={selectedMode}
                         layoutSettings={layoutSettings}
+                        positionYOffset={rankPositionOffsets[getRankDisplay(index)] || 0}
                       />
                     </motion.div>
                   ))}
@@ -450,6 +479,16 @@ export const AdminPage: React.FC = () => {
         </div>
 
       </div>
+
+      {/* Fine-Tune Position Modal */}
+      {fineTuneModal.isOpen && (
+        <RankPositionModal
+          rankNumber={fineTuneModal.rankNumber}
+          currentOffset={rankPositionOffsets[fineTuneModal.rankNumber] || 0}
+          onOffsetChange={handleOffsetChange}
+          onClose={closeFineTuneModal}
+        />
+      )}
     </div>
   );
 };

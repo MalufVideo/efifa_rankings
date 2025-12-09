@@ -32,8 +32,12 @@ export interface BroadcastMessage {
   gameMode: GameMode;
   countries: Country[];
   layoutSettings?: LayoutSettings;
+  rankPositionOffsets?: RankPositionOffsets; // Fine-tune Y position per rank number
   timestamp?: number; // Added for sync versioning
 }
+
+// Rank position Y offsets: maps rank number (1-16) to Y offset in pixels (-20 to +20)
+export type RankPositionOffsets = Record<number, number>;
 
 export const ADMIN_PASSWORD = 'sp2efifa';
 export const BROADCAST_CHANNEL_NAME = 'rankings_app_channel';

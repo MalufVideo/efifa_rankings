@@ -1,4 +1,4 @@
-import { BroadcastMessage, GameMode, Country, LayoutSettings } from '../types';
+import { BroadcastMessage, GameMode, Country, LayoutSettings, RankPositionOffsets } from '../types';
 
 // CONFIGURATION
 const STORAGE_KEY = 'rankings_app_state';
@@ -36,12 +36,13 @@ class BroadcastService {
 
   // --- ADMIN ACTIONS ---
 
-  public saveState(gameMode: GameMode, countries: Country[], layoutSettings?: LayoutSettings) {
+  public saveState(gameMode: GameMode, countries: Country[], layoutSettings?: LayoutSettings, rankPositionOffsets?: RankPositionOffsets) {
     const message: BroadcastMessage = {
       type: 'UPDATE_RANKINGS',
       gameMode,
       countries,
       layoutSettings,
+      rankPositionOffsets,
       timestamp: Date.now(),
     };
 

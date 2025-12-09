@@ -10,6 +10,8 @@ interface CountryCardProps {
   height?: number;
   isDraggable?: boolean;
   layoutSettings?: LayoutSettings;
+  positionYOffset?: number; // Fine-tune Y position offset in pixels (-20 to +20)
+  onRankClick?: (rankNumber: number) => void; // Callback when rank circle is clicked
 }
 
 export const CountryCard: React.FC<CountryCardProps> = ({ 
@@ -19,7 +21,9 @@ export const CountryCard: React.FC<CountryCardProps> = ({
   width = '100%',
   height = 86,
   isDraggable = false,
-  layoutSettings = DEFAULT_LAYOUT_SETTINGS
+  layoutSettings = DEFAULT_LAYOUT_SETTINGS,
+  positionYOffset = 0,
+  onRankClick
 }) => {
   const { fontSize, textPositionX, rankPositionX, rankSize, flagSize, flagPositionX, headerFontSize, headerPositionX } = layoutSettings;
   
@@ -71,7 +75,11 @@ export const CountryCard: React.FC<CountryCardProps> = ({
   return (
     <div 
       className={baseClasses}
-      style={{ width, height: height - 10 }} // -10 for gap simulation/margin within the cell
+      style={{ 
+        width, 
+        height: height - 10, // -10 for gap simulation/margin within the cell
+        transform: positionYOffset !== 0 ? `translateY(${positionYOffset}px)` : undefined
+      }}
     >
       {/* Background Pattern Overlay */}
       <div className="absolute inset-0 opacity-20 bg-[url('https://www.transparenttextures.com/patterns/carbon-fibre.png')] mix-blend-overlay pointer-events-none" />
@@ -79,12 +87,18 @@ export const CountryCard: React.FC<CountryCardProps> = ({
       
       {/* Rank Circle */}
       <div 
-        className="flex-shrink-0 bg-black/80 text-white rounded-full flex items-center justify-center font-black mr-4 shadow-md z-10 border-2 border-white/20"
+        className={`flex-shrink-0 bg-black/80 text-white rounded-full flex items-center justify-center font-black mr-4 shadow-md z-10 border-2 border-white/20 ${onRankClick ? 'cursor-pointer hover:bg-black/90 hover:border-emerald-400/50 transition-colors' : ''}`}
         style={{ 
           width: 40 * rankSize, 
           height: 40 * rankSize,
           fontSize: 20 * rankSize,
           transform: `translateX(${rankPositionX}px)` 
+        }}
+        onClick={(e) => {
+          if (onRankClick) {
+            e.stopPropagation();
+            onRankClick(rankDisplay);
+          }
         }}
       >
         {rankDisplay}

@@ -1,15 +1,17 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { GameMode, Country, ADMIN_PASSWORD, LayoutSettings } from '../types';
 import { INITIAL_DATA, CELL_HEIGHT, CELL_WIDTH, DEFAULT_LAYOUT_SETTINGS } from '../constants';
 import { Reorder, AnimatePresence, motion } from 'framer-motion';
 import { CountryCard } from './CountryCard';
 import { broadcastService } from '../services/broadcastService';
+import { adminSettingsService, AdminSettings } from '../services/adminSettingsService';
 import { Lock, Unlock, Send, Monitor, Settings, RotateCcw } from 'lucide-react';
 
 export const AdminPage: React.FC = () => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [passwordInput, setPasswordInput] = useState('');
   const [selectedMode, setSelectedMode] = useState<GameMode>(GameMode.E_CONSOLE);
+  const [isLoading, setIsLoading] = useState(true);
   
   // DRAFT STATE: This is what the admin manipulates in the Left Column
   const [draftRankings, setDraftRankings] = useState<Record<GameMode, Country[]>>(INITIAL_DATA);
@@ -20,6 +22,58 @@ export const AdminPage: React.FC = () => {
   // LAYOUT SETTINGS: Controls for card appearance
   const [layoutSettings, setLayoutSettings] = useState<LayoutSettings>(DEFAULT_LAYOUT_SETTINGS);
   const [showLayoutControls, setShowLayoutControls] = useState(false);
+
+  // Load saved settings on mount
+  useEffect(() => {
+    const loadSavedSettings = async () => {
+      const saved = await adminSettingsService.loadSettings();
+      if (saved) {
+        // Merge saved rankings with initial data to handle new game modes
+        const mergedDraft = { ...INITIAL_DATA };
+        const mergedLive = { ...INITIAL_DATA };
+        
+        Object.keys(saved.draftRankings || {}).forEach((mode) => {
+          if (mode in mergedDraft) {
+            mergedDraft[mode as GameMode] = saved.draftRankings[mode as GameMode];
+          }
+        });
+        
+        Object.keys(saved.liveRankings || {}).forEach((mode) => {
+          if (mode in mergedLive) {
+            mergedLive[mode as GameMode] = saved.liveRankings[mode as GameMode];
+          }
+        });
+
+        setDraftRankings(mergedDraft);
+        setLiveRankings(mergedLive);
+        if (saved.layoutSettings) {
+          setLayoutSettings(saved.layoutSettings);
+        }
+        if (saved.selectedMode && Object.values(GameMode).includes(saved.selectedMode)) {
+          setSelectedMode(saved.selectedMode);
+        }
+      }
+      setIsLoading(false);
+    };
+    loadSavedSettings();
+  }, []);
+
+  // Auto-save settings when they change (debounced)
+  const saveCurrentSettings = useCallback(() => {
+    if (isLoading) return; // Don't save during initial load
+    const settings: AdminSettings = {
+      draftRankings,
+      liveRankings,
+      layoutSettings,
+      selectedMode,
+      timestamp: Date.now()
+    };
+    adminSettingsService.saveSettings(settings);
+  }, [draftRankings, liveRankings, layoutSettings, selectedMode, isLoading]);
+
+  useEffect(() => {
+    saveCurrentSettings();
+  }, [saveCurrentSettings]);
   
   const draftList = draftRankings[selectedMode];
   const liveList = liveRankings[selectedMode];
@@ -42,13 +96,23 @@ export const AdminPage: React.FC = () => {
 
   const handleAnima = () => {
     // 1. Update the local Live state (triggers Right Column animation)
-    setLiveRankings(prev => ({
-      ...prev,
+    const newLiveRankings = {
+      ...liveRankings,
       [selectedMode]: [...draftList] 
-    }));
+    };
+    setLiveRankings(newLiveRankings);
 
     // 2. Persist State (Updates Broadcast Page globally via polling/storage)
     broadcastService.saveState(selectedMode, draftList, layoutSettings);
+
+    // 3. Save admin settings immediately
+    adminSettingsService.saveSettingsImmediate({
+      draftRankings,
+      liveRankings: newLiveRankings,
+      layoutSettings,
+      selectedMode,
+      timestamp: Date.now()
+    });
   };
 
   const handleLayoutChange = (key: keyof LayoutSettings, value: number) => {
@@ -60,6 +124,17 @@ export const AdminPage: React.FC = () => {
   };
 
   const itemsToSkip = selectedMode === GameMode.ROCKET_LEAGUE ? 0 : 0;
+
+  // Helper to check if current mode is a group mode (has header at index 0)
+  const isGroupMode = [
+    GameMode.E_CONSOLE_GROUP_A,
+    GameMode.E_CONSOLE_GROUP_B,
+    GameMode.E_MOBILE_GROUP_A,
+    GameMode.E_MOBILE_GROUP_B
+  ].includes(selectedMode);
+
+  // For group modes, rank 1 starts at index 1 (after header)
+  const getRankDisplay = (index: number) => isGroupMode ? index : index + 1;
 
   if (!isAuthenticated) {
     return (
@@ -168,8 +243,8 @@ export const AdminPage: React.FC = () => {
                   </label>
                   <input
                     type="range"
-                    min="-200"
-                    max="200"
+                    min="-500"
+                    max="500"
                     value={layoutSettings.textPositionX}
                     onChange={(e) => handleLayoutChange('textPositionX', Number(e.target.value))}
                     className="w-full h-2 bg-slate-700 rounded-lg appearance-none cursor-pointer accent-emerald-500"
@@ -296,7 +371,7 @@ export const AdminPage: React.FC = () => {
               >
                 <CountryCard 
                   country={country} 
-                  rankDisplay={index + 1} 
+                  rankDisplay={getRankDisplay(index)} 
                   gameMode={selectedMode}
                   isDraggable
                   layoutSettings={layoutSettings}
@@ -362,7 +437,7 @@ export const AdminPage: React.FC = () => {
                     >
                       <CountryCard 
                         country={country} 
-                        rankDisplay={index + 1} 
+                        rankDisplay={getRankDisplay(index)} 
                         gameMode={selectedMode}
                         layoutSettings={layoutSettings}
                       />

@@ -9,6 +9,7 @@ const __dirname = path.dirname(__filename);
 const app = express();
 const PORT = process.env.PORT || 3000;
 const DATA_FILE = path.join(__dirname, 'rankings-data.json');
+const ADMIN_SETTINGS_FILE = path.join(__dirname, 'admin-settings.json');
 
 app.use(express.json());
 
@@ -36,6 +37,32 @@ app.post('/api/rankings', (req, res) => {
   } catch (err) {
     console.error("Error writing data file:", err);
     res.status(500).json({ error: "Failed to save data" });
+  }
+});
+
+// Admin Settings Endpoints - persists all rankings and layout settings
+app.get('/api/admin-settings', (req, res) => {
+  if (fs.existsSync(ADMIN_SETTINGS_FILE)) {
+    try {
+      const data = fs.readFileSync(ADMIN_SETTINGS_FILE, 'utf-8');
+      res.json(JSON.parse(data));
+    } catch (err) {
+      console.error("Error reading admin settings:", err);
+      res.status(500).json({ error: "Failed to read admin settings" });
+    }
+  } else {
+    res.json(null);
+  }
+});
+
+app.post('/api/admin-settings', (req, res) => {
+  try {
+    const data = JSON.stringify(req.body, null, 2);
+    fs.writeFileSync(ADMIN_SETTINGS_FILE, data);
+    res.json({ success: true, timestamp: Date.now() });
+  } catch (err) {
+    console.error("Error writing admin settings:", err);
+    res.status(500).json({ error: "Failed to save admin settings" });
   }
 });
 

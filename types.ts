@@ -2,8 +2,10 @@ export enum GameMode {
   ROCKET_LEAGUE = 'Rocket League',
   E_CONSOLE = 'eConsole',
   E_MOBILE = 'eMobile',
-  E_CONSOLE_GROUPS = 'eConsole Groups',
-  E_MOBILE_GROUPS = 'eMobile Groups'
+  E_CONSOLE_GROUP_A = 'eConsole Group A',
+  E_CONSOLE_GROUP_B = 'eConsole Group B',
+  E_MOBILE_GROUP_A = 'eMobile Group A',
+  E_MOBILE_GROUP_B = 'eMobile Group B'
 }
 
 export interface Country {

@@ -22,3 +22,7 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+# Runtime data
+rankings-data.json
+admin-settings.json

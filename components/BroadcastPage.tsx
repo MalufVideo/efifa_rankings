@@ -47,33 +47,44 @@ export const BroadcastPage: React.FC = () => {
         {/* List Container */}
         <div className="flex flex-col">
           <AnimatePresence mode="popLayout">
-            {countries.map((country, index) => (
-              <motion.div
-                layout
-                key={country.id}
-                initial={{ opacity: 0, scale: 0.9, x: -100 }}
-                animate={{ opacity: 1, scale: 1, x: 0 }}
-                exit={{ opacity: 0, scale: 0.9 }}
-                transition={{
-                  type: "spring",
-                  stiffness: 300,
-                  damping: 30,
-                  mass: 1,
-                  layout: { duration: 0.8, type: "spring", bounce: 0.15 } // The "Sleek" animation
-                }}
-                style={{ height: CELL_HEIGHT }}
-                className="w-full flex items-center justify-center"
-              >
-                <CountryCard 
-                  country={country} 
-                  rankDisplay={index + 1} 
-                  gameMode={currentMode}
-                  width={CELL_WIDTH}
-                  height={CELL_HEIGHT}    
-                  layoutSettings={layoutSettings}
-                />
-              </motion.div>
-            ))}
+            {countries.map((country, index) => {
+              // For group modes, header is at index 0, so rank 1 starts at index 1
+              const isGroupMode = [
+                GameMode.E_CONSOLE_GROUP_A,
+                GameMode.E_CONSOLE_GROUP_B,
+                GameMode.E_MOBILE_GROUP_A,
+                GameMode.E_MOBILE_GROUP_B
+              ].includes(currentMode);
+              const rankDisplay = isGroupMode ? index : index + 1;
+              
+              return (
+                <motion.div
+                  layout
+                  key={country.id}
+                  initial={{ opacity: 0, scale: 0.9, x: -100 }}
+                  animate={{ opacity: 1, scale: 1, x: 0 }}
+                  exit={{ opacity: 0, scale: 0.9 }}
+                  transition={{
+                    type: "spring",
+                    stiffness: 300,
+                    damping: 30,
+                    mass: 1,
+                    layout: { duration: 0.8, type: "spring", bounce: 0.15 } // The "Sleek" animation
+                  }}
+                  style={{ height: CELL_HEIGHT }}
+                  className="w-full flex items-center justify-start"
+                >
+                  <CountryCard 
+                    country={country} 
+                    rankDisplay={rankDisplay} 
+                    gameMode={currentMode}
+                    width={CELL_WIDTH}
+                    height={CELL_HEIGHT}    
+                    layoutSettings={layoutSettings}
+                  />
+                </motion.div>
+              );
+            })}
           </AnimatePresence>
         </div>
       </div>

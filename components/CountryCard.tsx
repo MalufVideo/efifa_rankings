@@ -28,10 +28,12 @@ export const CountryCard: React.FC<CountryCardProps> = ({
       case GameMode.ROCKET_LEAGUE:
         return 'from-[#CF0605] to-[#FEB50B]';
       case GameMode.E_MOBILE:
-      case GameMode.E_MOBILE_GROUPS:
+      case GameMode.E_MOBILE_GROUP_A:
+      case GameMode.E_MOBILE_GROUP_B:
         return 'from-[#BCA400] to-[#D9D838]';
       case GameMode.E_CONSOLE:
-      case GameMode.E_CONSOLE_GROUPS:
+      case GameMode.E_CONSOLE_GROUP_A:
+      case GameMode.E_CONSOLE_GROUP_B:
         return 'from-[#019C2E] to-[#9DDC03]';
       default:
         return 'from-gray-500 to-gray-400';
@@ -85,7 +87,7 @@ export const CountryCard: React.FC<CountryCardProps> = ({
           transform: `translateX(${rankPositionX}px)` 
         }}
       >
-        {country.rank || rankDisplay}
+        {rankDisplay}
       </div>
 
       {/* Flag Image */}
@@ -106,7 +108,7 @@ export const CountryCard: React.FC<CountryCardProps> = ({
 
       {/* Name */}
       <div 
-        className="drop-shadow-sm truncate z-10 flex-grow font-black text-center"
+        className="drop-shadow-sm truncate z-10 flex-grow font-black text-left"
         style={{ 
           fontSize: `${fontSize}px`,
           transform: `translateX(${textPositionX}px)` 

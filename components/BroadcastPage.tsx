@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { broadcastService } from '../services/broadcastService';
-import { GameMode, Country, LayoutSettings, RankPositionOffsets } from '../types';
-import { INITIAL_DATA, CELL_HEIGHT, CELL_WIDTH, CANVAS_HEIGHT, CANVAS_WIDTH, DEFAULT_LAYOUT_SETTINGS } from '../constants';
+import { GameMode, Country, LayoutSettings, AnimationSettings, RankPositionOffsets } from '../types';
+import { INITIAL_DATA, CELL_HEIGHT, CELL_WIDTH, CANVAS_HEIGHT, CANVAS_WIDTH, DEFAULT_LAYOUT_SETTINGS, DEFAULT_ANIMATION_SETTINGS } from '../constants';
 import { AnimatePresence, motion } from 'framer-motion';
 import { CountryCard } from './CountryCard';
 
@@ -9,6 +9,7 @@ export const BroadcastPage: React.FC = () => {
   const [currentMode, setCurrentMode] = useState<GameMode>(GameMode.E_CONSOLE);
   const [countries, setCountries] = useState<Country[]>(INITIAL_DATA[GameMode.E_CONSOLE]);
   const [layoutSettings, setLayoutSettings] = useState<LayoutSettings>(DEFAULT_LAYOUT_SETTINGS);
+  const [animationSettings, setAnimationSettings] = useState<AnimationSettings>(DEFAULT_ANIMATION_SETTINGS);
   const [rankPositionOffsets, setRankPositionOffsets] = useState<RankPositionOffsets>({});
 
   useEffect(() => {
@@ -19,6 +20,9 @@ export const BroadcastPage: React.FC = () => {
         setCountries(msg.countries);
         if (msg.layoutSettings) {
           setLayoutSettings(msg.layoutSettings);
+        }
+        if (msg.animationSettings) {
+          setAnimationSettings(msg.animationSettings);
         }
         if (msg.rankPositionOffsets) {
           setRankPositionOffsets(msg.rankPositionOffsets);
@@ -70,10 +74,14 @@ export const BroadcastPage: React.FC = () => {
                   exit={{ opacity: 0, scale: 0.9 }}
                   transition={{
                     type: "spring",
-                    stiffness: 300,
-                    damping: 30,
-                    mass: 1,
-                    layout: { duration: 0.8, type: "spring", bounce: 0.15 } // The "Sleek" animation
+                    stiffness: animationSettings.stiffness,
+                    damping: animationSettings.damping,
+                    mass: animationSettings.mass,
+                    layout: { 
+                      duration: animationSettings.layoutDuration, 
+                      type: "spring", 
+                      bounce: 0.15 
+                    }
                   }}
                   style={{ height: CELL_HEIGHT }}
                   className="w-full flex items-center justify-start"

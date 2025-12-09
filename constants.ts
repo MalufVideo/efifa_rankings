@@ -1,4 +1,4 @@
-import { Country, GameMode, LayoutSettings } from './types';
+import { Country, GameMode, LayoutSettings, AnimationSettings } from './types';
 
 // Default layout settings
 export const DEFAULT_LAYOUT_SETTINGS: LayoutSettings = {
@@ -10,6 +10,14 @@ export const DEFAULT_LAYOUT_SETTINGS: LayoutSettings = {
   flagPositionX: 0,    // No offset by default
   headerFontSize: 36,  // Default header text size
   headerPositionX: 0,  // No offset by default
+};
+
+// Default animation settings (current values used in codebase)
+export const DEFAULT_ANIMATION_SETTINGS: AnimationSettings = {
+  stiffness: 300,      // Spring stiffness
+  damping: 30,         // Spring damping
+  mass: 1,             // Spring mass
+  layoutDuration: 0.8, // Layout animation duration in seconds
 };
 
 const createCountry = (id: string, name: string, isoCode: string, rank: number): Country => ({

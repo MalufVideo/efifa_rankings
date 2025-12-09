@@ -1,4 +1,4 @@
-import { GameMode, Country, LayoutSettings, RankPositionOffsets } from '../types';
+import { GameMode, Country, LayoutSettings, AnimationSettings, RankPositionOffsets } from '../types';
 
 const API_URL = '/api/admin-settings';
 
@@ -6,6 +6,7 @@ export interface AdminSettings {
   draftRankings: Record<GameMode, Country[]>;
   liveRankings: Record<GameMode, Country[]>;
   layoutSettings: LayoutSettings;
+  animationSettings?: AnimationSettings;
   selectedMode: GameMode;
   rankPositionOffsets?: RankPositionOffsets; // Fine-tune Y position per rank number (-20 to +20 px)
   timestamp: number;

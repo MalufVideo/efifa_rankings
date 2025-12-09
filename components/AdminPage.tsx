@@ -1,11 +1,11 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { GameMode, Country, ADMIN_PASSWORD, LayoutSettings, RankPositionOffsets } from '../types';
-import { INITIAL_DATA, CELL_HEIGHT, CELL_WIDTH, DEFAULT_LAYOUT_SETTINGS } from '../constants';
+import { GameMode, Country, ADMIN_PASSWORD, LayoutSettings, AnimationSettings, RankPositionOffsets } from '../types';
+import { INITIAL_DATA, CELL_HEIGHT, CELL_WIDTH, DEFAULT_LAYOUT_SETTINGS, DEFAULT_ANIMATION_SETTINGS } from '../constants';
 import { Reorder, AnimatePresence, motion } from 'framer-motion';
 import { CountryCard } from './CountryCard';
 import { broadcastService } from '../services/broadcastService';
 import { adminSettingsService, AdminSettings } from '../services/adminSettingsService';
-import { Lock, Unlock, Send, Monitor, Settings, RotateCcw } from 'lucide-react';
+import { Lock, Unlock, Send, Monitor, Settings, RotateCcw, Timer } from 'lucide-react';
 import { RankPositionModal } from './RankPositionModal';
 
 export const AdminPage: React.FC = () => {
@@ -23,6 +23,10 @@ export const AdminPage: React.FC = () => {
   // LAYOUT SETTINGS: Controls for card appearance
   const [layoutSettings, setLayoutSettings] = useState<LayoutSettings>(DEFAULT_LAYOUT_SETTINGS);
   const [showLayoutControls, setShowLayoutControls] = useState(false);
+
+  // ANIMATION SETTINGS: Controls for animation timing
+  const [animationSettings, setAnimationSettings] = useState<AnimationSettings>(DEFAULT_ANIMATION_SETTINGS);
+  const [showAnimationControls, setShowAnimationControls] = useState(false);
 
   // RANK POSITION OFFSETS: Fine-tune Y position per rank number
   const [rankPositionOffsets, setRankPositionOffsets] = useState<RankPositionOffsets>({});
@@ -60,6 +64,9 @@ export const AdminPage: React.FC = () => {
         if (saved.rankPositionOffsets) {
           setRankPositionOffsets(saved.rankPositionOffsets);
         }
+        if (saved.animationSettings) {
+          setAnimationSettings(saved.animationSettings);
+        }
       }
       setIsLoading(false);
     };
@@ -73,12 +80,13 @@ export const AdminPage: React.FC = () => {
       draftRankings,
       liveRankings,
       layoutSettings,
+      animationSettings,
       selectedMode,
       rankPositionOffsets,
       timestamp: Date.now()
     };
     adminSettingsService.saveSettings(settings);
-  }, [draftRankings, liveRankings, layoutSettings, selectedMode, rankPositionOffsets, isLoading]);
+  }, [draftRankings, liveRankings, layoutSettings, animationSettings, selectedMode, rankPositionOffsets, isLoading]);
 
   useEffect(() => {
     saveCurrentSettings();
@@ -112,13 +120,14 @@ export const AdminPage: React.FC = () => {
     setLiveRankings(newLiveRankings);
 
     // 2. Persist State (Updates Broadcast Page globally via polling/storage)
-    broadcastService.saveState(selectedMode, draftList, layoutSettings, rankPositionOffsets);
+    broadcastService.saveState(selectedMode, draftList, layoutSettings, animationSettings, rankPositionOffsets);
 
     // 3. Save admin settings immediately
     adminSettingsService.saveSettingsImmediate({
       draftRankings,
       liveRankings: newLiveRankings,
       layoutSettings,
+      animationSettings,
       selectedMode,
       rankPositionOffsets,
       timestamp: Date.now()
@@ -131,6 +140,14 @@ export const AdminPage: React.FC = () => {
 
   const resetLayoutSettings = () => {
     setLayoutSettings(DEFAULT_LAYOUT_SETTINGS);
+  };
+
+  const handleAnimationChange = (key: keyof AnimationSettings, value: number) => {
+    setAnimationSettings(prev => ({ ...prev, [key]: value }));
+  };
+
+  const resetAnimationSettings = () => {
+    setAnimationSettings(DEFAULT_ANIMATION_SETTINGS);
   };
 
   // Handle rank position fine-tuning
@@ -216,6 +233,14 @@ export const AdminPage: React.FC = () => {
             }`}
           >
             <Settings className="w-4 h-4" /> Layout
+          </button>
+          <button
+            onClick={() => setShowAnimationControls(!showAnimationControls)}
+            className={`flex items-center gap-2 px-3 py-1.5 rounded-md transition-colors ${
+              showAnimationControls ? 'bg-purple-500/20 text-purple-400' : 'hover:bg-slate-800'
+            }`}
+          >
+            <Timer className="w-4 h-4" /> Animação
           </button>
           <span className="flex items-center gap-2">
             <Monitor className="w-4 h-4" /> Broadcast Ready
@@ -378,6 +403,109 @@ export const AdminPage: React.FC = () => {
             </div>
           )}
 
+          {/* Animation Controls Panel */}
+          {showAnimationControls && (
+            <div className="mb-6 p-4 bg-slate-800/50 rounded-xl border border-purple-700/50">
+              <div className="flex items-center justify-between mb-4">
+                <h3 className="text-sm font-semibold text-slate-300 flex items-center gap-2">
+                  <Timer className="w-4 h-4 text-purple-400" /> Velocidade da Animação
+                </h3>
+                <button
+                  onClick={resetAnimationSettings}
+                  className="text-xs text-slate-400 hover:text-slate-200 flex items-center gap-1 px-2 py-1 rounded hover:bg-slate-700 transition-colors"
+                >
+                  <RotateCcw className="w-3 h-3" /> Resetar
+                </button>
+              </div>
+              
+              <div className="space-y-4">
+                {/* Stiffness */}
+                <div>
+                  <label className="text-xs text-slate-400 mb-1 flex justify-between">
+                    <span>Rigidez (velocidade do encaixe)</span>
+                    <span className="text-purple-400">{animationSettings.stiffness}</span>
+                  </label>
+                  <input
+                    type="range"
+                    min="50"
+                    max="500"
+                    step="10"
+                    value={animationSettings.stiffness}
+                    onChange={(e) => handleAnimationChange('stiffness', Number(e.target.value))}
+                    className="w-full h-2 bg-slate-700 rounded-lg appearance-none cursor-pointer accent-purple-500"
+                  />
+                  <div className="flex justify-between text-[10px] text-slate-500 mt-1">
+                    <span>Mais lento</span>
+                    <span>Mais rápido</span>
+                  </div>
+                </div>
+
+                {/* Damping */}
+                <div>
+                  <label className="text-xs text-slate-400 mb-1 flex justify-between">
+                    <span>Amortecimento (reduz quique)</span>
+                    <span className="text-purple-400">{animationSettings.damping}</span>
+                  </label>
+                  <input
+                    type="range"
+                    min="5"
+                    max="100"
+                    step="1"
+                    value={animationSettings.damping}
+                    onChange={(e) => handleAnimationChange('damping', Number(e.target.value))}
+                    className="w-full h-2 bg-slate-700 rounded-lg appearance-none cursor-pointer accent-purple-500"
+                  />
+                  <div className="flex justify-between text-[10px] text-slate-500 mt-1">
+                    <span>Mais quique</span>
+                    <span>Menos quique</span>
+                  </div>
+                </div>
+
+                {/* Mass */}
+                <div>
+                  <label className="text-xs text-slate-400 mb-1 flex justify-between">
+                    <span>Massa (sensação de peso)</span>
+                    <span className="text-purple-400">{animationSettings.mass.toFixed(1)}</span>
+                  </label>
+                  <input
+                    type="range"
+                    min="0.1"
+                    max="5"
+                    step="0.1"
+                    value={animationSettings.mass}
+                    onChange={(e) => handleAnimationChange('mass', Number(e.target.value))}
+                    className="w-full h-2 bg-slate-700 rounded-lg appearance-none cursor-pointer accent-purple-500"
+                  />
+                  <div className="flex justify-between text-[10px] text-slate-500 mt-1">
+                    <span>Mais leve</span>
+                    <span>Mais pesado</span>
+                  </div>
+                </div>
+
+                {/* Layout Duration */}
+                <div>
+                  <label className="text-xs text-slate-400 mb-1 flex justify-between">
+                    <span>Duração da Mudança de Posição</span>
+                    <span className="text-purple-400">{animationSettings.layoutDuration.toFixed(1)}s</span>
+                  </label>
+                  <input
+                    type="range"
+                    min="0.2"
+                    max="3"
+                    step="0.1"
+                    value={animationSettings.layoutDuration}
+                    onChange={(e) => handleAnimationChange('layoutDuration', Number(e.target.value))}
+                    className="w-full h-2 bg-slate-700 rounded-lg appearance-none cursor-pointer accent-purple-500"
+                  />
+                  <div className="flex justify-between text-[10px] text-slate-500 mt-1">
+                    <span>Rápido</span>
+                    <span>Lento</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
+
           <div className="mb-4 flex items-center justify-between">
             <h3 className="text-lg font-semibold text-slate-300">Draft Order</h3>
             <span className="text-xs bg-slate-800 px-2 py-1 rounded text-slate-400">Drag to reorder</span>
@@ -455,10 +583,10 @@ export const AdminPage: React.FC = () => {
                       animate={{ opacity: 1, scale: 1, x: 0 }}
                       transition={{ 
                         type: "spring", 
-                        stiffness: 150, 
-                        damping: 20,
-                        mass: 0.8,
-                        layout: { duration: 0.8 }
+                        stiffness: animationSettings.stiffness,
+                        damping: animationSettings.damping,
+                        mass: animationSettings.mass,
+                        layout: { duration: animationSettings.layoutDuration }
                       }}
                       style={{ height: CELL_HEIGHT }}
                       className="flex items-center justify-center w-full"

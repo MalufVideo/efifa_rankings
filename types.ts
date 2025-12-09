@@ -27,11 +27,19 @@ export interface LayoutSettings {
   headerPositionX: number; // X offset for group headers (px)
 }
 
+export interface AnimationSettings {
+  stiffness: number;       // Spring stiffness (higher = faster snap)
+  damping: number;         // Spring damping (higher = less bounce)
+  mass: number;            // Spring mass (higher = slower)
+  layoutDuration: number;  // Duration for layout transitions (seconds)
+}
+
 export interface BroadcastMessage {
   type: 'UPDATE_RANKINGS';
   gameMode: GameMode;
   countries: Country[];
   layoutSettings?: LayoutSettings;
+  animationSettings?: AnimationSettings;
   rankPositionOffsets?: RankPositionOffsets; // Fine-tune Y position per rank number
   timestamp?: number; // Added for sync versioning
 }

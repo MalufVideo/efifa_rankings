@@ -173,7 +173,9 @@ export const AdminPage: React.FC = () => {
     GameMode.E_CONSOLE_GROUP_A,
     GameMode.E_CONSOLE_GROUP_B,
     GameMode.E_MOBILE_GROUP_A,
-    GameMode.E_MOBILE_GROUP_B
+    GameMode.E_MOBILE_GROUP_B,
+    GameMode.ROCKET_LEAGUE_GROUP_A,
+    GameMode.ROCKET_LEAGUE_GROUP_B
   ].includes(selectedMode);
 
   // For group modes, rank 1 starts at index 1 (after header)

@@ -110,6 +110,28 @@ export const INITIAL_DATA: Record<GameMode, Country[]> = {
     createCountry('emgb-4', 'India', 'in', 4),
     createCountry('emgb-5', 'Colombia', 'co', 5),
     createCountry('emgb-6', 'Greece', 'gr', 6),
+  ],
+  [GameMode.ROCKET_LEAGUE_GROUP_A]: [
+    createHeader('rlga-header', 'GROUP A'),
+    createCountry('rlga-1', 'Italy', 'it', 1),
+    createCountry('rlga-2', 'Saudi Arabia', 'sa', 2),
+    createCountry('rlga-3', 'USA', 'us', 3),
+    createCountry('rlga-4', 'Oman', 'om', 4),
+    createCountry('rlga-5', 'Chile', 'cl', 5),
+    createCountry('rlga-6', 'Germany', 'de', 6),
+    createCountry('rlga-7', 'Brazil', 'br', 7),
+    createCountry('rlga-8', 'Norway', 'no', 8),
+  ],
+  [GameMode.ROCKET_LEAGUE_GROUP_B]: [
+    createHeader('rlgb-header', 'GROUP B'),
+    createCountry('rlgb-1', 'Australia', 'au', 1),
+    createCountry('rlgb-2', 'France', 'fr', 2),
+    createCountry('rlgb-3', 'Morocco', 'ma', 3),
+    createCountry('rlgb-4', 'Netherlands', 'nl', 4),
+    createCountry('rlgb-5', 'South Africa', 'za', 5),
+    createCountry('rlgb-6', 'Belgium', 'be', 6),
+    createCountry('rlgb-7', 'England', 'gb-eng', 7),
+    createCountry('rlgb-8', 'Malaysia', 'my', 8),
   ]
 };
 

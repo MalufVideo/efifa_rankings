@@ -31,6 +31,9 @@ export const CountryCard: React.FC<CountryCardProps> = ({
     switch (gameMode) {
       case GameMode.ROCKET_LEAGUE:
         return 'from-[#CF0605] to-[#FEB50B]';
+      case GameMode.ROCKET_LEAGUE_GROUP_A:
+      case GameMode.ROCKET_LEAGUE_GROUP_B:
+        return 'from-[#FEB50B] to-[#CF0605]';
       case GameMode.E_MOBILE:
       case GameMode.E_MOBILE_GROUP_A:
       case GameMode.E_MOBILE_GROUP_B:
